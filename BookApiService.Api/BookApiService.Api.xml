@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BookApiService.Api</name>
+    </assembly>
+    <members>
+        <member name="M:StpTest.Controllers.BookController.Get">
+            <summary>
+            Получить первую книгу
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:StpTest.Controllers.BookController.Get(System.Int32)">
+            <summary>
+            Получить книгу по Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StpTest.Controllers.BookController.PostAsync(BookApiService.Api.DTOs.CreateBookDto)">
+            <summary>
+            Сохранить книгу
+            </summary>
+            <param name="createBookDto"></param>
+        </member>
+        <member name="M:StpTest.Controllers.BookController.Put(System.Int32,BookApiService.Api.DTOs.CreateBookDto)">
+            <summary>
+            Обновить книгу
+            </summary>
+            <param name="id"></param>
+            <param name="updateBookDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StpTest.Controllers.BookController.Delete(System.Int32)">
+            <summary>
+            Удалить книгу
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookApiService.Controllers.BooksController.Get(BookApiService.Core.Models.Filter[])">
+            <summary>
+            Получить книги
+            </summary>
+            <param name="filter">Настройки фильтрации</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
