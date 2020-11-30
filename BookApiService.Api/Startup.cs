@@ -13,6 +13,7 @@ using BookApiService.Data;
 using BookApiService.Services;
 using BookApiService.Core.Services;
 using BookApiService.Core;
+using BookApiService.Api.Routing;
 
 namespace BookApiService.Api
 {
@@ -28,7 +29,12 @@ namespace BookApiService.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Conventions.Insert(0, new RoutingConvention("Base Route Prefix", "api/bookservice/"));
+                options.ModelBinderProviders.Insert(0, new FilterBinderProvider());
+            }
+            );
             services.AddEntityFrameworkNpgsql().AddDbContext<BookDBContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Postgresql")));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IBookService, BookService>();
@@ -41,6 +47,7 @@ namespace BookApiService.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
             });
+            services.AddSwaggerGenNewtonsoftSupport();
 
             services.AddAutoMapper(typeof(Startup));
         }
@@ -64,9 +71,10 @@ namespace BookApiService.Api
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger(); app.UseSwaggerUI(c =>
+            app.UseSwagger(options => options.RouteTemplate = $"/api/bookservice/swagger/{{documentName}}/swagger.json"); 
+            app.UseSwaggerUI(c =>
             {
-                c.RoutePrefix = "";
+                c.RoutePrefix = "/api/bookservice/swagger";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Service V1");
             });
         }

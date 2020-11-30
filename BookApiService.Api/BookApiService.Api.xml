@@ -45,5 +45,17 @@
             <param name="filter">Настройки фильтрации</param>
             <returns></returns>
         </member>
+        <member name="T:BookApiService.Api.Routing.RoutingConvention">
+            <summary>
+            Routing Convention sets base route prefix for all controllers.
+            </summary>
+        </member>
+        <member name="M:BookApiService.Api.Routing.RoutingConvention.#ctor(System.String,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="attributeModelName">Prefix name - like "Base Route Prefix"</param>
+            <param name="attributeModelTemplate">Prefix template - like "api/bookservice/"</param>
+        </member>
     </members>
 </doc>
