@@ -71,11 +71,12 @@ namespace BookApiService.Api
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger(options => options.RouteTemplate = $"/api/bookservice/swagger/{{documentName}}/swagger.json"); 
+            string baseRoute = "api/bookservice";
+            app.UseSwagger(options => options.RouteTemplate = $"{baseRoute.TrimStart('/').TrimEnd('/')}/swagger/{{documentName}}/swagger.json");
             app.UseSwaggerUI(c =>
             {
-                c.RoutePrefix = "/api/bookservice/swagger";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Service V1");
+                c.RoutePrefix = $"{baseRoute.TrimStart('/').TrimEnd('/')}/swagger";
+                c.SwaggerEndpoint("v1/swagger.json", "Book Service V1");
             });
         }
     }
