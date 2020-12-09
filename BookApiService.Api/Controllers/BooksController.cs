@@ -35,9 +35,9 @@ namespace BookApiService.Controllers
         /// <param name="filter">Настройки фильтрации</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReadBookDto>>> Get([FromQuery] Filter[] filter)
+        public async Task<ActionResult<IEnumerable<ReadBookDto>>> Get([FromQuery(Name = "filter")] Filter[] filter)
         {
-            //api/books?filter=[{"property":"genres","value":"0"},{"property":"publicationYear","value":1980}]
+            //api/books?filter=[{"property":"genres","value":"Poetry"},{"property":"publicationYear","value":"1993"}]
             string author = null;
             string title = null;
             int? publicationYear = null;
@@ -85,7 +85,7 @@ namespace BookApiService.Controllers
                 }
             }
 
-            if (string.IsNullOrEmpty(author) && string.IsNullOrEmpty(title) && !publicationYear.HasValue && bookbinding == Bookbindings.NotSet && genres.Count == 0 && ageCategorie == AgeCategories.NotSet)
+            if (string.IsNullOrEmpty(author) && string.IsNullOrEmpty(title) && !publicationYear.HasValue && bookbinding == Bookbindings.NotSet && genres == null && ageCategorie == AgeCategories.NotSet)
             {
                 var books = await _bookService.GetAllBooks();
                 var readBooks = _mapper.Map<IEnumerable<Book>, IEnumerable<ReadBookDto>>(books);
@@ -93,13 +93,26 @@ namespace BookApiService.Controllers
             }
             else
             {
-                Expression<Func<Book, bool>> criteria = book => book.Author.Contains(author) || book.Title.Contains(title) || book.PublicationYear.Equals(publicationYear)
-                || book.Bookbinding.HasFlag(bookbinding) || book.Genres.Any(s => genres.Any(d => s.HasFlag(d))) || book.AgeCategorie.HasFlag(ageCategorie);
+                var criteria = GetCriteria(author, title, publicationYear, bookbinding, ageCategorie, genres);
 
-                var books = _bookService.FindBooks(criteria);
+                var books = _bookService.FindBooks(criteria).AsEnumerable();
                 var readBooks = _mapper.Map<IEnumerable<Book>, IEnumerable<ReadBookDto>>(books);
                 return Ok(readBooks);
             }
+        }
+
+        private static Expression<Func<Book, bool>> GetCriteria(string author, string title, int? publicationYear, Bookbindings bookbinding, AgeCategories ageCategorie, List<Genres> genres)
+        {
+            Expression<Func<Book, bool>> criteria = book =>
+            (string.IsNullOrEmpty(author) || book.Author.Contains(author))
+            && (string.IsNullOrEmpty(title) || book.Title.Contains(title))
+            && (!publicationYear.HasValue || book.PublicationYear.Equals(publicationYear))
+            && (bookbinding.HasFlag(Bookbindings.NotSet) || book.Bookbinding.HasFlag(bookbinding))
+           //&& (genres == null || book.Genres.Contains(genres[0]))
+           //&& (genres == null || genres.All(g => book.Genres.Any(x => x.HasFlag(g))))
+           //&& (genres == null || book.Genres.All(g => genres.))
+           && (ageCategorie.HasFlag(AgeCategories.NotSet) || book.AgeCategorie.HasFlag(ageCategorie));
+            return criteria;
         }
     }
 }
